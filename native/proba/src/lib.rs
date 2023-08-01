@@ -11,7 +11,7 @@ use crate::card::*;
 use crate::deck::*;
 use crate::hand::*;
 
-#[rustler::nif]
+#[rustler::nif(schedule = "DirtyCpu")]
 fn odds(input: Vec<&str>, iterations: u32) -> Vec<Stats> {
     let hands: Vec<Hand> = input.iter().map(|cards| Hand::from(*cards)).collect();
 
@@ -42,6 +42,7 @@ fn run(hands: &Vec<Hand>, comminity: &Vec<Vec<Card>>) -> Vec<Stats> {
                 let tie: bool = ranks.iter().filter(|r| *r == top).count() > 1;
 
                 for (index, _) in hands.iter().enumerate() {
+                    stats[index].run();
                     if ranks[index] == *top {
                         if tie {
                             stats[index].tie();

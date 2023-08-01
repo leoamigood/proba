@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::card::*;
 use crate::constants::*;
 use crate::deckcards::*;
@@ -13,11 +14,17 @@ pub struct Stats {
     pub hand: String,
     pub wins: u32,
     pub ties: u32,
+    pub runs: u32,
 }
 
 impl Encoder for Stats {
     fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
-        (self.hand.clone(), self.wins.clone(), self.ties.clone()).encode(env)
+        HashMap::from([
+            ("hand", self.hand.clone()),
+            ("wins", self.wins.clone().to_string()),
+            ("ties", self.ties.clone().to_string()),
+            ("runs", self.runs.clone().to_string()),
+        ]).encode(env)
     }
 }
 
@@ -27,7 +34,12 @@ impl Stats {
             hand: hand.to_string(),
             wins: 0,
             ties: 0,
+            runs: 0,
         }
+    }
+
+    pub fn run(&mut self) {
+        self.runs += 1;
     }
 
     pub fn win(&mut self) {
