@@ -32,8 +32,8 @@ pub const KING_FLUSH: usize = QUEEN_FLUSH << 1;
 pub const ACE_FLUSH: usize = KING_FLUSH << 1;
 
 pub const RANK_OFFSET_SHIFT: u32 = 9;
-pub const RANK_HASH_MOD: u32 = (1 << RANK_OFFSET_SHIFT) - 1;
+pub const RANK_HASH_MOD: u64 = (1 << RANK_OFFSET_SHIFT) - 1;
 
 // Bit masks
 pub const FLUSH_BIT_SHIFT: u8 = 23;
-pub const FACE_BIT_MASK: u32 = (1 << FLUSH_BIT_SHIFT) - 1;
+pub const FACE_BIT_MASK: u64 = (1 << FLUSH_BIT_SHIFT) - 1;

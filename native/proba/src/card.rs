@@ -1,4 +1,5 @@
 use std::fmt;
+use std::str::FromStr;
 use strum::IntoEnumIterator;
 use strum_macros::Display;
 use strum_macros::EnumIter;
@@ -12,6 +13,16 @@ pub struct Card {
     suit: Suit,
     pub value: usize,
     weight: u32,
+}
+
+impl From<&str> for Card {
+    fn from(value: &str) -> Self {
+        let mut chars = value.chars();
+        Card::new(
+            Rank::from_str(&chars.next().unwrap().to_string()).unwrap(),
+            Suit::from_str(&chars.next().unwrap().to_string()).unwrap(),
+        )
+    }
 }
 
 impl fmt::Display for Card {
@@ -37,8 +48,8 @@ impl Card {
     }
 }
 
-pub fn weight(hand: &Vec<Card>) -> u32 {
-    hand.iter().fold(0, |acc, card| acc + card.weight)
+pub fn weight(hand: &Vec<Card>) -> u64 {
+    hand.iter().fold(0, |acc, card| acc + card.weight) as u64
 }
 
 pub fn suit_value(suit: Suit) -> u32 {

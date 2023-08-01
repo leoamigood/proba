@@ -13,18 +13,25 @@ pub fn deck() -> Vec<Card> {
         .collect()
 }
 
-pub fn comminity(deck: &Vec<Card>) -> Vec<Card> {
-    deck.choose_multiple(&mut rand::thread_rng(), 5)
+pub fn comminity(deck: &Vec<Card>, board: &Vec<Card>) -> Vec<Card> {
+    let mut cards = deck.choose_multiple(&mut rand::thread_rng(), 5 - board.iter().count())
         .map(|c| c.clone())
-        .collect::<Vec<Card>>()
+        .collect::<Vec<Card>>();
+
+    cards.extend(board);
+    cards
 }
 
-pub fn withdraw<'a>(deck: &'a mut Vec<Card>, hands: &Vec<Hand>) -> &'a Vec<Card> {
+pub fn withdraw(deck: &mut Vec<Card>, hands: &Vec<Hand>, community: &Vec<Card>){
     for hand in hands {
         for card in hand.cards() {
-            let index = deck.iter().position(|x| *x == card).unwrap();
+            let index = deck.iter().position(|c| *c == card).unwrap();
             deck.remove(index);
         }
     }
-    deck
+
+    for card in community {
+        let index = deck.iter().position(|c| c == card).unwrap();
+        deck.remove(index);
+    }
 }
