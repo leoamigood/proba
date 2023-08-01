@@ -5,7 +5,7 @@ defmodule Proba.MixProject do
     [
       app: :proba,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -46,7 +46,8 @@ defmodule Proba.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:rustler, "~> 0.29.1"}
     ]
   end
 

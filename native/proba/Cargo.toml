@@ -1,0 +1,22 @@
+[package]
+name = "proba"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[lib]
+name = "proba"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.29.1"
+ciborium = "0.2.1"
+rand = "0.8.5"
+serde = "1.0.178"
+strum = "0.25"
+strum_macros = "0.25"
+
+[profile.release]
+lto = true
+codegen-units = 1
