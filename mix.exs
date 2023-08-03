@@ -47,7 +47,8 @@ defmodule Proba.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:rustler, "~> 0.29.1"}
+      {:rustler, "~> 0.29.1"},
+      {:decimal, "~> 1.0"}
     ]
   end
 

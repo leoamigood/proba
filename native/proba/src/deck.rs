@@ -13,7 +13,7 @@ pub fn deck() -> Vec<Card> {
         .collect()
 }
 
-pub fn comminity(deck: &Vec<Card>, board: &Vec<Card>) -> Vec<Card> {
+pub fn community(deck: &Vec<Card>, board: &Vec<Card>) -> Vec<Card> {
     let mut cards = deck.choose_multiple(&mut rand::thread_rng(), 5 - board.iter().count())
         .map(|c| c.clone())
         .collect::<Vec<Card>>();

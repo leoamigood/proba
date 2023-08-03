@@ -109,7 +109,7 @@ pub enum Rank {
     Two = 12,
 }
 
-#[derive(Display, EnumString, Debug, EnumIter, Clone, Copy, Eq, PartialEq)]
+#[derive(Display, EnumString, Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Suit {
     #[strum(serialize = "♠", serialize = "s")]
     Spades = 0,
