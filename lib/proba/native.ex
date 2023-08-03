@@ -1,4 +1,6 @@
 defmodule Proba.Native do
+  @moduledoc false
+
   use Rustler, otp_app: :proba, crate: "proba"
 
   @spec odds([String], [String], integer) :: [{}]
@@ -15,5 +17,5 @@ defmodule Proba.Native do
     end)
   end
 
-  defp error(), do: :erlang.nif_error(:nif_not_loaded)
+  defp error, do: :erlang.nif_error(:nif_not_loaded)
 end
