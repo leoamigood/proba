@@ -15,9 +15,11 @@ defmodule Proba.Application do
       # Start Finch
       {Finch, name: Proba.Finch},
       # Start the Endpoint (http/https)
-      ProbaWeb.Endpoint
+      ProbaWeb.Endpoint,
       # Start a worker by calling: Proba.Worker.start_link(arg)
       # {Proba.Worker, arg}
+      ExGram,
+      {Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

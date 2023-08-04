@@ -48,9 +48,13 @@ defmodule Proba.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:rustler, "~> 0.29.1"},
-      {:decimal, "~> 1.0"},
+      {:decimal, "~> 2.0"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:ex_gram, "~> 0.40.0"},
+      {:tesla, "~> 1.2"},
+      {:hackney, "~> 1.12"},
+      {:poison, "~> 5.0"}
     ]
   end
 

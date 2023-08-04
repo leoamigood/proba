@@ -8,9 +8,9 @@ import Config
 config :proba, ProbaWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :proba, Proba.Native,
-       crate: :proba,
-       skip_compilation?: true,
-       load_from: {:proba, "priv/native/libproba"}
+  crate: :proba,
+  skip_compilation?: true,
+  load_from: {:proba, "priv/native/libproba"}
 
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Proba.Finch

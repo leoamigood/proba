@@ -81,15 +81,15 @@ pub fn rank_value(rank: Rank) -> u32 {
 
 #[derive(Display, EnumString, Debug, EnumIter, Clone, Copy, Eq, PartialEq)]
 pub enum Rank {
-    #[strum(serialize = "A")]
+    #[strum(serialize = "a", serialize = "A")]
     Ace = 0,
-    #[strum(serialize = "K")]
+    #[strum(serialize = "k", serialize = "K")]
     King = 1,
-    #[strum(serialize = "Q")]
+    #[strum(serialize = "q", serialize = "Q")]
     Queen = 2,
-    #[strum(serialize = "J")]
+    #[strum(serialize = "j", serialize = "J")]
     Jack = 3,
-    #[strum(serialize = "T")]
+    #[strum(serialize = "t", serialize = "T")]
     Ten = 4,
     #[strum(serialize = "9")]
     Nine = 5,
@@ -111,12 +111,12 @@ pub enum Rank {
 
 #[derive(Display, EnumString, Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Suit {
-    #[strum(serialize = "♠", serialize = "s")]
+    #[strum(serialize = "♠", serialize = "s", serialize = "S")]
     Spades = 0,
-    #[strum(serialize = "♥", serialize = "h")]
+    #[strum(serialize = "♥", serialize = "h", serialize = "H")]
     Hearts = 1,
-    #[strum(serialize = "♦", serialize = "d")]
+    #[strum(serialize = "♦", serialize = "d", serialize = "D")]
     Diamonds = 2,
-    #[strum(serialize = "♣", serialize = "c")]
+    #[strum(serialize = "♣", serialize = "c", serialize = "C")]
     Clubs = 3,
 }
