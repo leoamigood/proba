@@ -54,7 +54,8 @@ defmodule Proba.MixProject do
       {:ex_gram, "~> 0.40.0"},
       {:tesla, "~> 1.2"},
       {:hackney, "~> 1.12"},
-      {:poison, "~> 5.0"}
+      {:poison, "~> 5.0"},
+      {:libcluster, "~> 3.3"}
     ]
   end
 

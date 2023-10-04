@@ -3,23 +3,50 @@ defmodule Proba.Native do
 
   use Rustler, otp_app: :proba, crate: "proba"
 
+  # milliseconds
+  @timeout 250
+
   @spec odds([String.t()], [String.t()], integer) :: [{}]
   def odds(_hands, _board, _iterations), do: error()
 
   @spec probability([String.t()], [String.t()], integer) :: [{}]
   def probability(hands, board \\ [], iterations \\ 1_000_000) do
-    odds(hands, board, iterations)
-    |> Enum.map(fn {hand, wins, ties} ->
+    {probabilities, _} =
+      :rpc.multicall(
+        [Node.self() | Node.list()],
+        __MODULE__,
+        :odds,
+        [hands, board, iterations],
+        @timeout
+      )
+
+    probabilities |> reduce |> format(iterations)
+  end
+
+  def reduce(probabilities) do
+    probabilities
+    |> List.flatten()
+    |> Enum.group_by(fn {hand, _, _} -> hand end, fn {_, win, tie} -> {win, tie} end)
+    |> Enum.map(fn {hand, wins_and_ties} ->
+      {hand,
+       Enum.reduce(wins_and_ties, {0, 0}, fn {win, tie}, {w, t} ->
+         {win / length(wins_and_ties) + w, tie / length(wins_and_ties) + t}
+       end)}
+    end)
+  end
+
+  def format(odds, iterations) do
+    Enum.map(odds, fn {hand, {wins, ties}} ->
       {
         hand,
-        (wins * 100.0 / iterations) |> format,
-        (ties * 100.0 / iterations) |> format
+        (wins * 100.0 / iterations) |> round(2),
+        (ties * 100.0 / iterations) |> round(2)
       }
     end)
   end
 
-  defp format(float) do
-    float |> Decimal.from_float() |> Decimal.round(0, :floor) |> Decimal.to_integer()
+  def round(float, precision \\ 0) do
+    float |> Decimal.from_float() |> Decimal.round(precision, :floor)
   end
 
   defp error, do: :erlang.nif_error(:nif_not_loaded)

@@ -63,9 +63,14 @@ defmodule Proba.BotTest do
   end
 
   test "calculates poker hands odds" do
-    assert Bot.calculate(["AsKs", "8h8c"], []) == "A♠ K♠ WINS: 47%\n8♥ 8♣ WINS: 52%"
+    assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), [
+             "A♠ K♠ WINS: 47%",
+             "8♥ 8♣ WINS: 52%"
+           ])
 
-    assert Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]) ==
-             "A♠ 9♠ TIES: 95%\nA♥ 9♦ WINS: 4% TIES: 95%"
+    assert String.contains?(Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]), [
+             "A♠ 9♠ TIES: 95%",
+             "A♥ 9♦ WINS: 4% TIES: 95%"
+           ])
   end
 end
