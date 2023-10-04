@@ -7,6 +7,8 @@ defmodule Proba.Application do
 
   @impl true
   def start(_type, _args) do
+    topologies = Application.get_env(:libcluster, :topologies) || []
+
     children = [
       # Start the Telemetry supervisor
       ProbaWeb.Telemetry,
@@ -19,7 +21,8 @@ defmodule Proba.Application do
       # Start a worker by calling: Proba.Worker.start_link(arg)
       # {Proba.Worker, arg}
       ExGram,
-      {Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]}
+      {Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]},
+      {Cluster.Supervisor, [topologies, [name: Proba.ClusterSupervisor]]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
