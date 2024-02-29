@@ -43,7 +43,7 @@ defmodule Proba.Bot do
          :ok <- validate_board(text),
          :ok <- validate_duplicates(text) do
       {hands, board} = hands_and_board(text)
-      answer(context, calculate(hands, board))
+      answer(context, calculate(hands, board, 2))
     else
       {:error, :invalid_cards, cards} ->
         answer(context, "Abort, invalid cards: #{cards |> Enum.join(" ")}")
@@ -142,10 +142,10 @@ defmodule Proba.Bot do
     end
   end
 
-  @spec calculate([String.t()], [String.t()]) :: String.t()
-  def calculate(cards, board) do
+  @spec calculate([String.t()], [String.t()], integer) :: String.t()
+  def calculate(cards, board, precision \\ 0) do
     cards
-    |> Poker.probability(board)
+    |> Poker.probability(board, precision)
     |> Enum.map_join("\n", fn {hand, win, tie} ->
       "#{hand}#{report(" WINS:", win)}#{report(" TIES:", tie)}"
     end)
