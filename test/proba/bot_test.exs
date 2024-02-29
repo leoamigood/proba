@@ -72,5 +72,11 @@ defmodule Proba.BotTest do
              "A♠ 9♠ TIES: 95%",
              "A♥ 9♦ WINS: 4% TIES: 95%"
            ])
+
+    assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), [
+      "A♦ Q♥ WINS: 40%",
+      "2♣ 2♠ WINS: 27%",
+      "8♠ 9♣ WINS: 32%"
+    ])
   end
 end

@@ -4,13 +4,13 @@ defmodule Proba.Native do
   use Rustler, otp_app: :proba, crate: "proba"
 
   # milliseconds
-  @timeout 250
+  @timeout 350
 
   @spec odds([String.t()], [String.t()], integer) :: [{}]
   def odds(_hands, _board, _iterations), do: error()
 
-  @spec probability([String.t()], [String.t()], integer) :: [{}]
-  def probability(hands, board \\ [], iterations \\ 1_000_000) do
+  @spec probability([String.t()], [String.t()], integer, integer) :: [{}]
+  def probability(hands, board \\ [], precision \\ 0, iterations \\ 1_000_000) do
     {probabilities, _} =
       :rpc.multicall(
         [Node.self() | Node.list()],
@@ -20,7 +20,7 @@ defmodule Proba.Native do
         @timeout
       )
 
-    probabilities |> reduce |> format(iterations)
+    probabilities |> reduce |> format(iterations, precision)
   end
 
   def reduce(probabilities) do
@@ -35,12 +35,12 @@ defmodule Proba.Native do
     end)
   end
 
-  def format(odds, iterations) do
+  def format(odds, iterations, precision) do
     Enum.map(odds, fn {hand, {wins, ties}} ->
       {
         hand,
-        (wins * 100.0 / iterations) |> round(2),
-        (ties * 100.0 / iterations) |> round(2)
+        (wins * 100.0 / iterations) |> round(precision),
+        (ties * 100.0 / iterations) |> round(precision)
       }
     end)
   end
