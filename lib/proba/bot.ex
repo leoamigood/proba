@@ -67,13 +67,14 @@ defmodule Proba.Bot do
     |> String.replace(" ", "")
     |> String.codepoints()
     |> Enum.chunk_every(2)
-    |> Enum.map(&Enum.join/1)
+    |> Enum.map(fn [c, s] -> String.upcase(c) <> String.downcase(s) end)
+    |> Enum.to_list()
   end
 
   defp validate_card(card) do
     case card |> String.split("", trim: true) do
       [rank | [suit]]
-      when rank in ~w(A a K k Q q J j T t 9 8 7 6 5 4 3 2) and suit in ~w(S s H h D d C c) ->
+      when rank in ~w(A K Q J T 9 8 7 6 5 4 3 2) and suit in ~w(s h d c) ->
         :ok
 
       _ ->
@@ -93,7 +94,7 @@ defmodule Proba.Bot do
   def validate_hands(text) do
     [board | hands] = text |> String.split() |> Enum.reverse()
 
-    if is_board?(board),
+    if board?(board),
       do: validate_hand_length(hands),
       else: validate_hand_length([board | hands])
   end
@@ -105,14 +106,14 @@ defmodule Proba.Bot do
     end
   end
 
-  defp is_board?(board), do: String.length(board) >= 6 and rem(String.length(board), 2) == 0
+  defp board?(board), do: String.length(board) >= 6 and rem(String.length(board), 2) == 0
 
   defp validate_max(hands, max),
     do: if(length(hands) > max, do: {:error, :invalid_players}, else: :ok)
 
   def validate_players(text) do
     [board | hands] = text |> String.split() |> Enum.reverse()
-    if is_board?(board), do: validate_max(hands, 10), else: validate_max(hands, 9)
+    if board?(board), do: validate_max(hands, 10), else: validate_max(hands, 9)
   end
 
   def validate_board(text) do
@@ -120,6 +121,7 @@ defmodule Proba.Bot do
     if String.length(board) > 10, do: {:error, :invalid_board}, else: :ok
   end
 
+  @spec validate_duplicates(String.t()) :: :ok | {:error, :duplicates, list}
   def validate_duplicates(text) do
     cards = text |> as_cards
 
@@ -132,10 +134,10 @@ defmodule Proba.Bot do
   def hands_and_board(text) do
     [board | hands] = text |> String.split() |> Enum.reverse()
 
-    if is_board?(board) do
+    if board?(board) do
       {
         hands |> Enum.reverse(),
-        board |> String.codepoints() |> Enum.chunk_every(2) |> Enum.map(&Enum.join/1)
+        board |> as_cards
       }
     else
       {[board | hands] |> Enum.reverse(), []}

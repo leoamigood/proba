@@ -40,6 +40,10 @@ defmodule Proba.BotTest do
     assert Bot.validate_duplicates("AsAd As9d 2cTs2c") == {:error, :duplicates, ["As", "2c"]}
   end
 
+  test "fails duplicate cards validation case insensitive" do
+    assert Bot.validate_duplicates("KcQs Ac6d kcJcaC") == {:error, :duplicates, ["Kc", "Ac"]}
+  end
+
   test "succeeds max players validation" do
     assert Bot.validate_players("AsAd KsKd QsQd JsJd TsTd 9s9d 8s8d 7s7d 6s6d 5s5d") == :ok
   end
