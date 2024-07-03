@@ -21,14 +21,17 @@ defmodule Proba.Application do
       # Start a worker by calling: Proba.Worker.start_link(arg)
       # {Proba.Worker, arg}
       ExGram,
-      {Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]},
       {Cluster.Supervisor, [topologies, [name: Proba.ClusterSupervisor]]}
-    ]
+    ] ++ more_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Proba.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp more_children do
+    Application.get_env(:proba, :more_children) || []
   end
 
   # Tell Phoenix to update the endpoint configuration

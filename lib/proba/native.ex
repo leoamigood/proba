@@ -11,31 +11,33 @@ defmodule Proba.Native do
 
   @spec probability([String.t()], [String.t()], integer, integer) :: [{}]
   def probability(hands, board \\ [], precision \\ 0, iterations \\ 1_000_000) do
-    {probabilities, _} =
-      :rpc.multicall(
-        [Node.self() | Node.list()],
-        __MODULE__,
-        :odds,
-        [hands, board, iterations],
-        @timeout
-      )
-
+    {probabilities, _} = multicall(hands, board, iterations)
     probabilities |> reduce |> format(iterations, precision)
   end
 
-  def reduce(probabilities) do
-    probabilities
-    |> List.flatten()
-    |> Enum.group_by(fn {hand, _, _} -> hand end, fn {_, win, tie} -> {win, tie} end)
-    |> Enum.map(fn {hand, wins_and_ties} ->
-      {hand,
-       Enum.reduce(wins_and_ties, {0, 0}, fn {win, tie}, {w, t} ->
-         {win / length(wins_and_ties) + w, tie / length(wins_and_ties) + t}
-       end)}
-    end)
+  defp multicall(hands, board, iterations) do
+    :rpc.multicall(
+      [Node.self() | Node.list()],
+      __MODULE__,
+      :odds,
+      [hands, board, iterations],
+      @timeout
+    )
   end
 
-  def format(odds, iterations, precision) do
+  defp reduce(probabilities) do
+    probabilities
+    |> List.flatten()
+    |> Enum.group_by(fn {hand, _, _} -> hand end)
+    |> Enum.map(fn {hand, wins_and_ties} -> {hand, average(wins_and_ties)} end)
+  end
+
+  defp average(results) do
+    {win_sum, tie_sum} = Enum.reduce(results, {0, 0}, fn {_, win, tie}, {wins, ties} -> {wins + win, ties + tie} end)
+    {win_sum / length(results), tie_sum / length(results)}
+  end
+
+  defp format(odds, iterations, precision) do
     Enum.map(odds, fn {hand, {wins, ties}} ->
       {
         hand,
@@ -45,7 +47,7 @@ defmodule Proba.Native do
     end)
   end
 
-  def round(float, precision \\ 0) do
+  defp round(float, precision) do
     float |> Decimal.from_float() |> Decimal.round(precision, :floor)
   end
 

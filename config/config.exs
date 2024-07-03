@@ -66,5 +66,4 @@ config :ex_gram, :webhook,
   allowed_updates: ["message"],
   drop_pending_updates: false,
   max_connections: 50,
-  secret_token: "Y1CZW5lFjAzkaB4ZPMQNfRaR",
   url: System.get_env("AMIGOOD_BOT_HOST") || "proba.fly.dev"

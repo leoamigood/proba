@@ -65,6 +65,8 @@ if config_env() == :prod do
       ]
     ]
 
+  config :proba, :more_children, [{Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]}]
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

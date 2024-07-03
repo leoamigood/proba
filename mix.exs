@@ -9,7 +9,10 @@ defmodule Proba.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      aliases: [
+        test: "test --no-start"
+      ]
     ]
   end
 
@@ -49,13 +52,14 @@ defmodule Proba.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:rustler, "~> 0.29.1"},
       {:decimal, "~> 2.0"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.4", only: :dev, runtime: false},
       {:ex_gram, "~> 0.40.0"},
       {:tesla, "~> 1.2"},
       {:hackney, "~> 1.12"},
       {:poison, "~> 5.0"},
-      {:libcluster, "~> 3.3"}
+      {:libcluster, "~> 3.3"},
+      {:local_cluster, "~> 1.2", only: :test, runtime: false}
     ]
   end
 

@@ -67,6 +67,8 @@ defmodule Proba.BotTest do
   end
 
   test "calculates poker hands odds" do
+    LocalCluster.start_nodes("poker-cluster", 2)
+
     assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), [
              "A♠ K♠ WINS: 47%",
              "8♥ 8♣ WINS: 52%"
@@ -82,5 +84,7 @@ defmodule Proba.BotTest do
       "2♣ 2♠ WINS: 27%",
       "8♠ 9♣ WINS: 32%"
     ])
+
+    :ok = LocalCluster.stop()
   end
 end
