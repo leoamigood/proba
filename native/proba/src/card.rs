@@ -111,12 +111,12 @@ pub enum Rank {
 
 #[derive(Display, EnumString, Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Suit {
-    #[strum(serialize = "♠", serialize = "s", serialize = "S")]
+    #[strum(serialize = "s")]
     Spades = 0,
-    #[strum(serialize = "♥", serialize = "h", serialize = "H")]
+    #[strum(serialize = "h")]
     Hearts = 1,
-    #[strum(serialize = "♦", serialize = "d", serialize = "D")]
+    #[strum(serialize = "d")]
     Diamonds = 2,
-    #[strum(serialize = "♣", serialize = "c", serialize = "C")]
+    #[strum(serialize = "c")]
     Clubs = 3,
 }

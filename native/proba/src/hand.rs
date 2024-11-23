@@ -41,7 +41,7 @@ impl From<&str> for Hand {
 
 impl fmt::Display for Hand {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} {}", self.cards[0], self.cards[1])
+        write!(f, "{}{}", self.cards[0], self.cards[1])
     }
 }
 

@@ -9,20 +9,21 @@ defmodule Proba.Application do
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies) || []
 
-    children = [
-      # Start the Telemetry supervisor
-      ProbaWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Proba.PubSub},
-      # Start Finch
-      {Finch, name: Proba.Finch},
-      # Start the Endpoint (http/https)
-      ProbaWeb.Endpoint,
-      # Start a worker by calling: Proba.Worker.start_link(arg)
-      # {Proba.Worker, arg}
-      ExGram,
-      {Cluster.Supervisor, [topologies, [name: Proba.ClusterSupervisor]]}
-    ] ++ more_children()
+    children =
+      [
+        # Start the Telemetry supervisor
+        ProbaWeb.Telemetry,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: Proba.PubSub},
+        # Start Finch
+        {Finch, name: Proba.Finch},
+        # Start the Endpoint (http/https)
+        ProbaWeb.Endpoint,
+        # Start a worker by calling: Proba.Worker.start_link(arg)
+        # {Proba.Worker, arg}
+        ExGram,
+        {Cluster.Supervisor, [topologies, [name: Proba.ClusterSupervisor]]}
+      ] ++ more_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -66,25 +66,39 @@ defmodule Proba.BotTest do
     assert Bot.hands_and_board("AsAd As9d 2cTs2s") == {["AsAd", "As9d"], ["2c", "Ts", "2s"]}
   end
 
-  test "calculates poker hands odds" do
-    LocalCluster.start_nodes("poker-cluster", 2)
-
+#  @tag :skip
+  test "calculates exact poker hands odds" do
     assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), [
-             "A♠ K♠ WINS: 47%",
-             "8♥ 8♣ WINS: 52%"
+             "A♠K♠ WINS: 47%",
+             "8♥8♣ WINS: 52%"
            ])
 
     assert String.contains?(Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]), [
-             "A♠ 9♠ TIES: 95%",
-             "A♥ 9♦ WINS: 4% TIES: 95%"
+             "A♠9♠ TIES: 95%",
+             "A♥9♦ WINS: 4% TIES: 95%"
            ])
 
     assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), [
-      "A♦ Q♥ WINS: 40%",
-      "2♣ 2♠ WINS: 27%",
-      "8♠ 9♣ WINS: 32%"
+             "A♦Q♥ WINS: 40%",
+             "2♣2♠ WINS: 27%",
+             "8♠9♣ WINS: 32%"
+           ])
+  end
+
+  test "calculates variative poker hands odds" do
+    assert String.contains?(Bot.calculate(["AsKs", ["7?7?", "8?8?", "9?9?"]], []), [
+      "A♠K♠ WINS: 47%",
+      "7?7? 8?8? 9?9? WINS: 52%"
     ])
 
-    :ok = LocalCluster.stop()
+    assert String.contains?(Bot.calculate(["8s9s", ["AxKx", "AxQx", "AxJx"]], []), [
+      "8♠9♠ WINS: 37%",
+      "AxKx AxQx AxJx WINS: 62%"
+    ])
+
+    assert String.contains?(Bot.calculate(["8s9s", ["AoKo", "T?T?", "AxJx"]], []), [
+      "8♠9♠ WINS: 30%",
+      "AxKx AxQx AxJx WINS: 69%"
+    ])
   end
 end

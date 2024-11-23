@@ -65,7 +65,9 @@ if config_env() == :prod do
       ]
     ]
 
-  config :proba, :more_children, [{Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]}]
+  config :proba, :more_children, [
+    {Proba.Bot, [method: :webhook, token: System.get_env("AMIGOOD_BOT_TOKEN")]}
+  ]
 
   # ## SSL Support
   #

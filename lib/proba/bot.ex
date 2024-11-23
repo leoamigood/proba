@@ -2,6 +2,7 @@ defmodule Proba.Bot do
   @moduledoc false
 
   @bot :proba
+  @precision 0
 
   use ExGram.Bot,
     name: @bot,
@@ -43,7 +44,7 @@ defmodule Proba.Bot do
          :ok <- validate_board(text),
          :ok <- validate_duplicates(text) do
       {hands, board} = hands_and_board(text)
-      answer(context, calculate(hands, board, 2))
+      answer(context, calculate(hands, board))
     else
       {:error, :invalid_cards, cards} ->
         answer(context, "Abort, invalid cards: #{cards |> Enum.join(" ")}")
@@ -144,13 +145,49 @@ defmodule Proba.Bot do
     end
   end
 
-  @spec calculate([String.t()], [String.t()], integer) :: String.t()
-  def calculate(cards, board, precision \\ 0) do
+  @spec calculate([String.t()], [[String.t()]]) :: String.t()
+  def calculate(cards, board \\ [])
+  def calculate([_hero | [_opponent]] = cards, board) do
     cards
-    |> Poker.probability(board, precision)
+    |> Poker.heads_up(board)
+    |> format
+  end
+
+  @spec calculate([String.t()], [String.t()]) :: String.t()
+  def calculate(cards, board) do
+    cards
+    |> Poker.multiway(board)
+    |> format
+  end
+
+  defp format(odds) do
+    Enum.map(odds, fn {hand, {wins, ties}} ->
+      {
+        hand |> beautify,
+        round(wins, @precision),
+        round(ties, @precision)
+      }
+    end)
     |> Enum.map_join("\n", fn {hand, win, tie} ->
       "#{hand}#{report(" WINS:", win)}#{report(" TIES:", tie)}"
     end)
+  end
+
+  defp beautify(hands) when is_list(hands) do
+    hands |> Enum.join(" ") |> beautify
+  end
+
+  defp beautify(hand) do
+    String.replace(hand, ["s", "h", "d", "c"], fn
+      "s" -> "♠"
+      "h" -> "♥"
+      "d" -> "♦"
+      "c" -> "♣"
+    end)
+  end
+
+  defp round(float, precision) do
+    float |> Decimal.from_float() |> Decimal.round(precision, :floor)
   end
 
   defp report(_, 0), do: ""
