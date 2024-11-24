@@ -13,6 +13,7 @@ defmodule Proba.Bot do
   command("start")
   command("help", description: "Print the bot's help")
   command("odds", description: "Calculate hands win and tie percentage")
+  command("vary", description: "Calculate variative hands win and tie percentage")
 
   middleware(ExGram.Middleware.IgnoreUsername)
 
@@ -37,6 +38,11 @@ defmodule Proba.Bot do
     handle({:text, cards, msg}, context)
   end
 
+  def handle({:command, :vary, %{text: cards}}, context) do
+    {[hero | opponents], board} = hands_and_board(cards)
+    answer(context, Benchmark.measure(fn -> calculate([hero | [opponents]], board) end))
+  end
+
   def handle({:text, text, _msg}, context) do
     with :ok <- validate_cards(text),
          :ok <- validate_hands(text),
@@ -44,7 +50,7 @@ defmodule Proba.Bot do
          :ok <- validate_board(text),
          :ok <- validate_duplicates(text) do
       {hands, board} = hands_and_board(text)
-      answer(context, calculate(hands, board))
+      answer(context, Benchmark.measure(fn -> calculate(hands, board) end))
     else
       {:error, :invalid_cards, cards} ->
         answer(context, "Abort, invalid cards: #{cards |> Enum.join(" ")}")
@@ -147,6 +153,7 @@ defmodule Proba.Bot do
 
   @spec calculate([String.t()], [[String.t()]]) :: String.t()
   def calculate(cards, board \\ [])
+
   def calculate([_hero | [_opponent]] = cards, board) do
     cards
     |> Poker.heads_up(board)

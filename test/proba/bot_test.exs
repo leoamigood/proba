@@ -3,6 +3,22 @@ defmodule Proba.BotTest do
 
   alias Proba.Bot
 
+  test "responds to /odds command with correct calculations" do
+    %ExGram.Cnt{answers: [response: answer]} =
+      Bot.handle({:command, :odds, %{text: "AsKs 8s8h"}}, %ExGram.Cnt{})
+
+    assert String.contains?(answer.text, "8♠8♥ WINS: 52%")
+    assert String.contains?(answer.text, "A♠K♠ WINS: 47%")
+  end
+
+  test "responds to /vary command with correct calculations" do
+    %ExGram.Cnt{answers: [response: answer]} =
+      Bot.handle({:command, :vary, %{text: "8s9s AxKx AxQx"}}, %ExGram.Cnt{})
+
+    assert String.contains?(answer.text, "AxKx AxQx WINS: 62%")
+    assert String.contains?(answer.text, "8♠9♠ WINS: 37%")
+  end
+
   test "succeeds cards validation" do
     assert Bot.validate_cards("As9h") == :ok
     assert Bot.validate_cards("Ad2c As9d 8cTcJh") == :ok
@@ -66,39 +82,63 @@ defmodule Proba.BotTest do
     assert Bot.hands_and_board("AsAd As9d 2cTs2s") == {["AsAd", "As9d"], ["2c", "Ts", "2s"]}
   end
 
-#  @tag :skip
+  #  @tag :skip
   test "calculates exact poker hands odds" do
-    assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), [
-             "A♠K♠ WINS: 47%",
-             "8♥8♣ WINS: 52%"
-           ])
+    assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), "A♠K♠ WINS: 47%")
+    assert String.contains?(Bot.calculate(["AsKs", "8h8c"], []), "8♥8♣ WINS: 52%")
 
-    assert String.contains?(Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]), [
-             "A♠9♠ TIES: 95%",
+    assert String.contains?(
+             Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]),
+             "A♠9♠ WINS: 0% TIES: 95%"
+           )
+
+    assert String.contains?(
+             Bot.calculate(["As9s", "Ah9d"], ["2h", "9h", "2d"]),
              "A♥9♦ WINS: 4% TIES: 95%"
-           ])
+           )
 
-    assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), [
-             "A♦Q♥ WINS: 40%",
-             "2♣2♠ WINS: 27%",
-             "8♠9♣ WINS: 32%"
-           ])
+    assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), "A♦Q♥ WINS: 40%")
+    assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), "2♣2♠ WINS: 27%")
+    assert String.contains?(Bot.calculate(["AdQh", "2c2s", "8s9c"], []), "8♠9♣ WINS: 32%")
   end
 
   test "calculates variative poker hands odds" do
-    assert String.contains?(Bot.calculate(["AsKs", ["7?7?", "8?8?", "9?9?"]], []), [
-      "A♠K♠ WINS: 47%",
-      "7?7? 8?8? 9?9? WINS: 52%"
-    ])
+    assert String.contains?(
+             Bot.calculate(["AsKs", ["7?7?", "8?8?", "9?9?"]], []),
+             "A♠K♠ WINS: 47%"
+           )
 
-    assert String.contains?(Bot.calculate(["8s9s", ["AxKx", "AxQx", "AxJx"]], []), [
-      "8♠9♠ WINS: 37%",
-      "AxKx AxQx AxJx WINS: 62%"
-    ])
+    assert String.contains?(
+             Bot.calculate(["AsKs", ["7?7?", "8?8?", "9?9?"]], []),
+             "7?7? 8?8? 9?9? WINS: 52%"
+           )
 
-    assert String.contains?(Bot.calculate(["8s9s", ["AoKo", "T?T?", "AxJx"]], []), [
-      "8♠9♠ WINS: 30%",
-      "AxKx AxQx AxJx WINS: 69%"
-    ])
+    assert String.contains?(
+             Bot.calculate(["8s9s", ["AxKx", "AxQx", "AxJx"]], []),
+             "8♠9♠ WINS: 37%"
+           )
+
+    assert String.contains?(
+             Bot.calculate(["8s9s", ["AxKx", "AxQx", "AxJx"]], []),
+             "AxKx AxQx AxJx WINS: 61%"
+           )
+
+    assert String.contains?(
+             Bot.calculate(["8s9s", ["AoKo", "T?T?", "AxJx"]], []),
+             "8♠9♠ WINS: 30%"
+           )
+
+    assert String.contains?(
+             Bot.calculate(["8s9s", ["AoKo", "T?T?", "AxJx"]], []),
+             "AoKo T?T? AxJx WINS: 69%"
+           )
+  end
+
+  test "calculates poker hands odds case insensitive" do
+    assert String.contains?(Bot.calculate(["asks", "8h8c"], []), "A♠K♠ WINS: 47%")
+    assert String.contains?(Bot.calculate(["asks", "8h8c"], []), "8♥8♣ WINS: 52%")
+
+    assert String.contains?(Bot.calculate(["asks", "aoto"], []), "A♠K♠ WINS: 72%")
+    assert String.contains?(Bot.calculate(["asks", "aoto"], []), "AoTo WINS: 22%")
   end
 end

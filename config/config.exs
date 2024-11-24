@@ -67,3 +67,5 @@ config :ex_gram, :webhook,
   drop_pending_updates: false,
   max_connections: 50,
   url: System.get_env("AMIGOOD_BOT_HOST") || "proba.fly.dev"
+
+config :proba, env: Mix.env()

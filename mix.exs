@@ -59,7 +59,8 @@ defmodule Proba.MixProject do
       {:hackney, "~> 1.12"},
       {:poison, "~> 5.0"},
       {:libcluster, "~> 3.3"},
-      {:local_cluster, "~> 1.2", only: :test, runtime: false}
+      {:local_cluster, "~> 1.2", only: :test, runtime: false},
+      {:timex, "~> 3.7"}
     ]
   end
 

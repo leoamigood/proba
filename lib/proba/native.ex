@@ -4,6 +4,7 @@ defmodule Proba.Native do
   @type board() :: [String.t()]
 
   use Rustler, otp_app: :proba, crate: "proba"
+  require Logger
 
   # milliseconds
   @timeout 1000
@@ -20,10 +21,16 @@ defmodule Proba.Native do
     |> Task.async_stream(Proba.Native, :probability, [[hero], board],
       ordered: false,
       on_timeout: :kill_task,
+      max_concurrency: length(Node.list()) + 1,
       timeout: @timeout
     )
     |> collect_successes
-    |> group_by_hand(hands |> Enum.flat_map(fn hand -> %{hand => variate(hand)} end) |> invert)
+    |> group_by_hand(
+      hands
+      |> upcase
+      |> Enum.flat_map(fn hand -> %{hand => variate(hand)} end)
+      |> invert
+    )
   end
 
   def multiway([hand | opponents] = hands, board \\ []) do
@@ -33,9 +40,10 @@ defmodule Proba.Native do
 
   @spec probability(hand, [hand], board) :: [{}]
   def probability(hand, opponents, board \\ []) do
-    #    IO.inspect("Invoke: hand: #{hand}, opponents: #{chunk(opponents)}, board: #{chunk(board)}")
+    node = Enum.random([Node.self() | Node.list()])
+    Logger.info("Invoke on #{node}: hand: #{hand}, opponents: #{chunk(opponents)}, board: #{chunk(board)}")
     :erpc.call(
-      Enum.random([Node.self() | Node.list()]),
+      node,
       __MODULE__,
       :odds,
       [[hand | opponents], board]
@@ -73,6 +81,17 @@ defmodule Proba.Native do
   defp variate([]), do: []
   defp variate(v) when byte_size(v) > 4, do: chunk(v, 4) |> variate
   defp variate(v), do: [v]
+
+  defp upcase(hands) when is_list(hands), do: Enum.map(hands, &upcase/1)
+
+  defp upcase(<<
+         rank1::binary-size(1),
+         suit1::binary-size(1),
+         rank2::binary-size(1),
+         suit2::binary-size(1)
+       >>) do
+    <<String.upcase(rank1)::binary, suit1::binary, String.upcase(rank2)::binary, suit2::binary>>
+  end
 
   defp chunk(input, size \\ 2)
 
